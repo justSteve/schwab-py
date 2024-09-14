@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from schwab.scripts.orders_codegen import latest_order_main
+from schwab.scripts.orders_codegen2 import latest_order_main
 
 if __name__ == '__main__':
     import sys

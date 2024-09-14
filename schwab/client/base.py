@@ -1,6 +1,6 @@
 '''Defines the basic client and methods for creating one. This client is
 completely unopinionated, and provides an easy-to-use wrapper around the TD
-Ameritrade HTTP API.'''
+Ameritrade (now Schwab) HTTP API.'''
 
 from abc import ABC, abstractmethod
 from enum import Enum
