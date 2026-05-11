@@ -5,8 +5,8 @@
   :target: https://discord.gg/BEr6y6Xqyv
 
 .. image:: 
-   https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%TDAAPI%26type%3Dpatrons&style=flat
-  :target: https://patreon.com/TDAAPI
+   https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%schwabpy%26type%3Dpatrons&style=flat
+  :target: https://patreon.com/schwabpy
 
 .. image:: https://readthedocs.org/projects/schwab-py/badge/?version=latest
   :target: https://schwab-py.readthedocs.io/en/latest/?badge=latest

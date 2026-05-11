@@ -7,7 +7,7 @@
 
 .. image:: _static/patreon.png
    :width: 110
-   :target: https://www.patreon.com/TDAAPI
+   :target: https://www.patreon.com/schwabpy
 
 .. image:: _static/discord-logo.png
    :width: 50
