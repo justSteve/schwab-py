@@ -105,513 +105,120 @@ class _TestClient:
         self.assertEqual(client.token_age(), 1000)
 
 
-
     # get_account
 
 
-    def test_get_account(self):
-        self.client.get_account(ACCOUNT_HASH)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}'), params={})
-
-    
-    def test_get_account_fields(self):
-        self.client.get_account(ACCOUNT_HASH, fields=[
-            self.client_class.Account.Fields.POSITIONS])
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}'),
-            params={'fields': 'positions'})
-
-
-    def test_get_account_fields_scalar(self):
-        self.client.get_account(
-                ACCOUNT_HASH, fields=self.client_class.Account.Fields.POSITIONS)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}'),
-            params={'fields': 'positions'})
-
-
-    def test_get_account_fields_unchecked(self):
-        self.client.set_enforce_enums(False)
-        self.client.get_account(ACCOUNT_HASH, fields=['positions'])
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}'),
-            params={'fields': 'positions'})
-
-
     # get_account_numbers
-
-    def test_get_account_numbers(self):
-        self.client.get_account_numbers()
-        self.mock_session.get.assert_called_with(
-                self.make_url('/trader/v1/accounts/accountNumbers'), params={})
 
 
     # get_accounts
 
 
-    def test_get_accounts(self):
-        self.client.get_accounts()
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts'), params={})
-
-
-    def test_get_accounts_fields(self):
-        self.client.get_accounts(fields=[
-            self.client_class.Account.Fields.POSITIONS])
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts'),
-            params={'fields': 'positions'})
-
-
-    def test_get_accounts_fields_scalar(self):
-        self.client.get_accounts(fields=self.client_class.Account.Fields.POSITIONS)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts'),
-            params={'fields': 'positions'})
-
-
-    def test_get_accounts_fields_unchecked(self):
-        self.client.set_enforce_enums(False)
-        self.client.get_accounts(fields=['positions'])
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts'),
-            params={'fields': 'positions'})
-
     # get_order
 
     
-    def test_get_order(self):
-        self.client.get_order(ORDER_ID, ACCOUNT_HASH)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders/{orderId}'),
-            params={})
-
-    def test_get_order_str(self):
-        self.client.get_order(str(ORDER_ID), str(ACCOUNT_HASH))
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders/{orderId}'),
-            params={})
-
     # cancel_order
 
-    def test_cancel_order(self):
-        self.client.cancel_order(ORDER_ID, ACCOUNT_HASH)
-        self.mock_session.delete.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders/{orderId}'))
-
-    def test_cancel_order_str(self):
-        self.client.cancel_order(str(ORDER_ID), str(ACCOUNT_HASH))
-        self.mock_session.delete.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders/{orderId}'))
 
     # get_orders_for_account
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_account_vanilla(self):
-        self.client.get_orders_for_account(ACCOUNT_HASH)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders'), params={
-                'fromEnteredTime': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'toEnteredTime': NOW_DATETIME_ISO
-            })
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_account_from_not_datetime(self):
-        with self.assertRaises(ValueError) as cm:
-            self.client.get_orders_for_account(
-                    ACCOUNT_HASH, from_entered_datetime='2020-01-02')
-        self.assertEqual(
-                str(cm.exception),
-                "expected type in (datetime.date, datetime.datetime) for " +
-                "from_entered_datetime, got 'builtins.str'")
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_account_to_not_datetime(self):
-        with self.assertRaises(ValueError) as cm:
-            self.client.get_orders_for_account(
-                    ACCOUNT_HASH, to_entered_datetime='2020-01-02')
-        self.assertEqual(
-                str(cm.exception),
-                "expected type in (datetime.date, datetime.datetime) for " +
-                "to_entered_datetime, got 'builtins.str'")
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_account_max_results(self):
-        self.client.get_orders_for_account(ACCOUNT_HASH, max_results=100)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders'), params={
-                'fromEnteredTime': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'toEnteredTime': NOW_DATETIME_ISO,
-                'maxResults': 100,
-            })
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_account_from_entered_datetime(self):
-        self.client.get_orders_for_account(
-                ACCOUNT_HASH, from_entered_datetime=datetime.datetime(
-                    year=2024, month=6, day=5, hour=4, minute=3, second=2))
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders'), params={
-                'fromEnteredTime': '2024-06-05T04:03:02Z',
-                'toEnteredTime': NOW_DATETIME_ISO,
-            })
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_account_to_entered_datetime(self):
-        self.client.get_orders_for_account(
-                ACCOUNT_HASH, to_entered_datetime=datetime.datetime(
-                    year=2024, month=6, day=5, hour=4, minute=3, second=2))
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders'), params={
-                'fromEnteredTime': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'toEnteredTime': '2024-06-05T04:03:02Z',
-            })
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_account_status(self):
-        self.client.get_orders_for_account(
-                ACCOUNT_HASH, status=self.client_class.Order.Status.FILLED)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders'), params={
-                'fromEnteredTime': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'toEnteredTime': NOW_DATETIME_ISO,
-                'status': 'FILLED'
-            })
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_account_multiple_statuses(self):
-        with self.assertRaises(ValueError) as cm:
-            self.client.get_orders_for_account(
-                    ACCOUNT_HASH,
-                    status=[self.client_class.Order.Status.FILLED,
-                            self.client_class.Order.Status.REJECTED])
-        self.assertIn(
-                'expected type "Status", got type "list"',
-                str(cm.exception))
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_account_status_unchecked(self):
-        self.client.set_enforce_enums(False)
-        self.client.get_orders_for_account(ACCOUNT_HASH, status='NOT_A_STATUS')
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders'), params={
-                'fromEnteredTime': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'toEnteredTime': NOW_DATETIME_ISO,
-                'status': 'NOT_A_STATUS'
-            })
 
 
     # get_orders_for_all_linked_accounts
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_all_linked_accounts_vanilla(self):
-        self.client.get_orders_for_all_linked_accounts()
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/orders'), params={
-                'fromEnteredTime': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'toEnteredTime': NOW_DATETIME_ISO
-            })
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_all_linked_accounts_from_not_datetime(self):
-        with self.assertRaises(ValueError) as cm:
-            self.client.get_orders_for_all_linked_accounts(
-                    from_entered_datetime='2020-01-02')
-        self.assertEqual(
-                str(cm.exception),
-                "expected type in (datetime.date, datetime.datetime) for " +
-                "from_entered_datetime, got 'builtins.str'")
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_all_linked_accounts_to_not_datetime(self):
-        with self.assertRaises(ValueError) as cm:
-            self.client.get_orders_for_all_linked_accounts(
-                    to_entered_datetime='2020-01-02')
-        self.assertEqual(
-                str(cm.exception),
-                "expected type in (datetime.date, datetime.datetime) for " +
-                "to_entered_datetime, got 'builtins.str'")
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_all_linked_accounts_max_results(self):
-        self.client.get_orders_for_all_linked_accounts(max_results=100)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/orders'), params={
-                'fromEnteredTime': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'toEnteredTime': NOW_DATETIME_ISO,
-                'maxResults': 100,
-            })
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_all_linked_accounts_from_entered_datetime(self):
-        self.client.get_orders_for_all_linked_accounts(
-                from_entered_datetime=datetime.datetime(
-                    year=2024, month=6, day=5, hour=4, minute=3, second=2))
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/orders'), params={
-                'fromEnteredTime': '2024-06-05T04:03:02Z',
-                'toEnteredTime': NOW_DATETIME_ISO,
-            })
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_all_linked_accounts_to_entered_datetime(self):
-        self.client.get_orders_for_all_linked_accounts(
-                to_entered_datetime=datetime.datetime(
-                    year=2024, month=6, day=5, hour=4, minute=3, second=2))
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/orders'), params={
-                'fromEnteredTime': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'toEnteredTime': '2024-06-05T04:03:02Z',
-            })
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_all_linked_accounts_status(self):
-        self.client.get_orders_for_all_linked_accounts(
-                status=self.client_class.Order.Status.FILLED)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/orders'), params={
-                'fromEnteredTime': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'toEnteredTime': NOW_DATETIME_ISO,
-                'status': 'FILLED'
-            })
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_all_linked_accounts_multiple_statuses(self):
-        with self.assertRaises(ValueError) as cm:
-            self.client.get_orders_for_all_linked_accounts(
-                    status=[self.client_class.Order.Status.FILLED,
-                            self.client_class.Order.Status.REJECTED])
-        self.assertIn(
-                'expected type "Status", got type "list"',
-                str(cm.exception))
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_orders_for_all_linked_accounts_status_unchecked(self):
-        self.client.set_enforce_enums(False)
-        self.client.get_orders_for_all_linked_accounts(status='NOT_A_STATUS')
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/orders'), params={
-                'fromEnteredTime': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'toEnteredTime': NOW_DATETIME_ISO,
-                'status': 'NOT_A_STATUS'
-            })
 
 
     # place_order
 
     
-    def test_place_order(self):
-        order_spec = {'order': 'spec'}
-        self.client.place_order(ACCOUNT_HASH, order_spec)
-        self.mock_session.post.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders'), json=order_spec)
-
-    
-    def test_place_order_order_builder(self):
-        order_spec = OrderBuilder(enforce_enums=False).set_order_type('LIMIT')
-        expected_spec = {'orderType': 'LIMIT'}
-        self.client.place_order(ACCOUNT_HASH, order_spec)
-        self.mock_session.post.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders'),
-            json=expected_spec)
-
-    
-    def test_place_order_str(self):
-        order_spec = {'order': 'spec'}
-        self.client.place_order(str(ACCOUNT_HASH), order_spec)
-        self.mock_session.post.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders'), json=order_spec)
-
     # replace_order
 
     
-    def test_replace_order(self):
-        order_spec = {'order': 'spec'}
-        self.client.replace_order(ACCOUNT_HASH, ORDER_ID, order_spec)
-        self.mock_session.put.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders/{orderId}'),
-            json=order_spec)
-
-    
-    def test_replace_order_order_builder(self):
-        order_spec = OrderBuilder(enforce_enums=False).set_order_type('LIMIT')
-        expected_spec = {'orderType': 'LIMIT'}
-        self.client.replace_order(ACCOUNT_HASH, ORDER_ID, order_spec)
-        self.mock_session.put.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders/{orderId}'),
-            json=expected_spec)
-
-    
-    def test_replace_order_str(self):
-        order_spec = {'order': 'spec'}
-        self.client.replace_order(str(ACCOUNT_HASH), str(ORDER_ID), order_spec)
-        self.mock_session.put.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/orders/{orderId}'),
-            json=order_spec)
-
-
     # preview_order
-
-    
-    def test_preview_order(self):
-        order_spec = {'order': 'spec'}
-        self.client.preview_order(ACCOUNT_HASH, order_spec)
-        self.mock_session.post.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/previewOrder'),
-            json=order_spec)
-
-    
-    def test_preview_order_order_builder(self):
-        order_spec = OrderBuilder(enforce_enums=False).set_order_type('LIMIT')
-        expected_spec = {'orderType': 'LIMIT'}
-        self.client.preview_order(ACCOUNT_HASH, order_spec)
-        self.mock_session.post.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/previewOrder'),
-            json=expected_spec)
 
     
     # get_transactions
 
     
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_transactions(self):
-        self.client.get_transactions(ACCOUNT_HASH)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/transactions'),
-            params={
-                'types': ','.join(t.value for t in self.client.Transactions.TransactionType),
-                'startDate': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'endDate': NOW_DATETIME_ISO})
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_transactions_one_type(self):
-        self.client.get_transactions(
-                ACCOUNT_HASH, 
-                transaction_types=self.client.Transactions.TransactionType.TRADE)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/transactions'),
-            params={
-                'types': 'TRADE',
-                'startDate': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'endDate': NOW_DATETIME_ISO})
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_transactions_type_list(self):
-        self.client.get_transactions(
-                ACCOUNT_HASH, 
-                transaction_types=[
-                    self.client.Transactions.TransactionType.TRADE,
-                    self.client.Transactions.TransactionType.JOURNAL])
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/transactions'),
-            params={
-                'types': 'TRADE,JOURNAL',
-                'startDate': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'endDate': NOW_DATETIME_ISO})
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_transactions_type_list_unchecked(self):
-        self.client.set_enforce_enums(False)
-        self.client.get_transactions(
-                ACCOUNT_HASH, transaction_types=['TRADE', 'JOURNAL'])
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/transactions'),
-            params={
-                'types': 'TRADE,JOURNAL',
-                'startDate': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'endDate': NOW_DATETIME_ISO})
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_transactions_symbol(self):
-        self.client.get_transactions(ACCOUNT_HASH, symbol='AAPL')
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/transactions'),
-            params={
-                'types': ','.join(t.value for t in self.client.Transactions.TransactionType),
-                'startDate': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'endDate': NOW_DATETIME_ISO,
-                'symbol': 'AAPL'})
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_transactions_symbol_start_date_as_datetime(self):
-        self.client.get_transactions(
-                ACCOUNT_HASH, start_date=NOW_DATETIME)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/transactions'),
-            params={
-                'types': ','.join(t.value for t in self.client.Transactions.TransactionType),
-                'startDate': NOW_DATETIME_ISO,
-                'endDate': NOW_DATETIME_ISO})
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_transactions_symbol_start_date_as_date(self):
-        self.client.get_transactions(
-                ACCOUNT_HASH, start_date=NOW_DATE)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/transactions'),
-            params={
-                'types': ','.join(t.value for t in self.client.Transactions.TransactionType),
-                'startDate': NOW_DATETIME_TRUNCATED_ISO,
-                'endDate': NOW_DATETIME_ISO})
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_transactions_symbol_end_date_as_datetime(self):
-        self.client.get_transactions(
-                ACCOUNT_HASH,
-                # NOW_DATETIME is the default, use something different
-                end_date=datetime.datetime(2020, 6, 7, 8, 9, 0))
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/transactions'),
-            params={
-                'types': ','.join(t.value for t in self.client.Transactions.TransactionType),
-                'startDate': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'endDate': '2020-06-07T08:09:00Z'})
 
 
     @patch('schwab.client.base.datetime.datetime', mockdatetime)
-    def test_get_transactions_symbol_end_date_as_date(self):
-        self.client.get_transactions(ACCOUNT_HASH, end_date=NOW_DATE)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url('/trader/v1/accounts/{accountHash}/transactions'),
-            params={
-                'types': ','.join(t.value for t in self.client.Transactions.TransactionType),
-                'startDate': NOW_DATETIME_MINUS_60_DAYS_ISO,
-                'endDate': NOW_DATETIME_TRUNCATED_ISO})
 
 
     # get_transaction
     
-    def test_get_transaction(self):
-        self.client.get_transaction(ACCOUNT_HASH, TRANSACTION_ID)
-        self.mock_session.get.assert_called_once_with(
-            self.make_url(
-                '/trader/v1/accounts/{accountHash}/transactions/{transactionId}'),
-            params={})
-
 
     # get_user_preference
 
@@ -1203,7 +810,6 @@ class _TestClient:
         self.mock_session.get.assert_called_once_with(
             self.make_url('/marketdata/v1/pricehistory'),
             params=params)
-
 
 
     # get_price_history_every_five_minutes
