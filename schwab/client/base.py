@@ -142,8 +142,24 @@ class BaseClient(EnumEnforcer):
     #   Enum classes: Account.Fields, Order.Status, Transactions.TransactionType
     #
     # Strader runs read-only: chains, quotes, bars, scanners, instruments.
-    # The removed methods are unrecoverable from within this codebase. Restoring
-    # them requires an explicit, reviewed diff against this DEFENSE NOTE.
+    #
+    # CORRECTED 2026-09-01 (st-c1af, from the st-5qjq independent audit,
+    # discovery request 3). This note used to say the removed methods were
+    # "unrecoverable from within this codebase". That described the method
+    # table, not the capability: both clients kept generic _post_request /
+    # _put_request / _delete_request methods that took an arbitrary path and
+    # issued it on the authenticated session, so an order could be placed in
+    # one line without touching a removed name. Those methods had zero callers
+    # and are now removed too (synchronous.py, asynchronous.py). What remains
+    # is _get_request, pinned to the API host.
+    #
+    # What this layer is, stated honestly: the fork has no write path *as
+    # shipped*. The authenticated session object still exists on the client,
+    # so code that constructs its own request can still transmit — this layer
+    # raises the effort and the visibility of doing that, and the layers that
+    # actually stop an order are the gate key, the hook, and (after stage 3)
+    # execd holding the only credential. Restoring any removed method requires
+    # an explicit, reviewed diff against this DEFENSE NOTE.
     #
     # Companion behavioral gate: ~/.schwab_gate_key (defense in depth).
     # ─────────────────────────────────────────────────────────────────────────
